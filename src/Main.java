@@ -1,7 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
 class Instruction{
@@ -117,8 +117,11 @@ class InstructionHandling {
 
     public static void main(String args[]) throws FileNotFoundException, InvalidImmediateException {
         valueInsertionTo_reg_file_and_opCode();
-        Scanner in = new Scanner(new File("Input.txt"));
-        while(in.hasNextLine()){
+        PrintStream fileStream = new PrintStream("Output.txt"); // Creates a FileOutputStream
+        System.setOut(fileStream);  // all system.out sends data to filestream
+        System.setErr(fileStream); // all system.err sends data to filestream
+        Scanner in = new Scanner(new File("Input.txt")); // getting inputs from Input.txt file using scanner class
+        while(in.hasNextLine()){            //reading line by line
             String ins = in.nextLine();
             System.out.println(ins);
             String opcode = ins.substring(0, ins.indexOf(' '));
@@ -126,14 +129,12 @@ class InstructionHandling {
             String[] regArray = ins.split(",");
             if (op_code.containsKey(opcode)) {
                 opcode = op_code.get(opcode);
-                if (Integer.parseInt(opcode,2) < 9) {
+                if (Integer.parseInt(opcode,2) < 9) {           // our r-type instructions are to 1000 binary
                     String reg1 = reg_file.get(regArray[0]);
                     String reg2 = reg_file.get(regArray[1]);
                     String reg3 = reg_file.get(regArray[2]);
                     System.out.println(new RType(opcode, reg1, reg2, reg3));
-
-
-                } else if (Integer.parseInt(opcode, 2) < 14) {
+                } else if (Integer.parseInt(opcode, 2) < 14) {   // our i-type instructions are to 1101 binary
                     String reg1 = reg_file.get(regArray[0]);
                     if (regArray.length == 3) {
                         String immediate;
@@ -149,7 +150,7 @@ class InstructionHandling {
                             System.err.println(e);
                         }
                     }
-                    else {
+                    else {                                          // rest are j-type
                         String arr[] = regArray[1].split("\\(");
                         String immediate = new NumberConversion().DecimalToBinary(Integer.parseInt(arr[0]));
                         String reg2 = reg_file.get(arr[1].substring(0,arr[1].length()-1));
@@ -202,8 +203,6 @@ class InstructionHandling {
         op_code.put("sw", "1011");
         op_code.put("beq", "1101");
         op_code.put("j", "1110");
-//            op_code.put("OUT", "1110");*/
-//            op_code.put("j", "1111");
     }
 
 
