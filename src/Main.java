@@ -1,37 +1,211 @@
-
-public class Main {
-    public static void main(String args[]) {
-
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Scanner;
+class Instruction{
+    String opcode="0000";
+    public static String BitFix(String a,int bit){
+        String out="";
+        int leadingBit = bit - a.length();
+        for (int i = 0; i <leadingBit ; i++) {
+            out+='0';
+        }
+        int index=0;
+        for (int i = leadingBit; i < bit; i++) {
+            out+=a.charAt(index++);
+        }
+        return out;
     }
 }
-class InstructionHandling{
-    String opcode="0000";
-    String rs="0000";
-    String rt="0000";
-    String shamt="00";
-    int immediate=0;
-    String instruction="add $t0,$t1";
-    InstructionHandling(){};
-    InstructionHandling(String instruction){
-        this.instruction = instruction;
+class InvalidInstructionException extends Exception{
+    public InvalidInstructionException() {
     }
-    public void operation(){
-        opcode = instruction.split(" ")[0];
-    }
-    public void reg1(){
-        this.rs = instruction.split(" ")[1];
-        rs = rs.substring(0,rs.indexOf(','));
-    }
-    public void reg2(){
-        String temp = instruction.split(" ")[2];
-        temp = temp.substring(0,rs.indexOf(','));
-        try{
-            
-        }
-        catch (Exception e){
 
+    @Override
+    public String toString() {
+        return "Invalid Instruction.";
+    }
+}
+class InvalidImmediateException extends Exception{
+    public InvalidImmediateException() {
+    }
+
+    @Override
+    public String toString() {
+        return "Invalid immediate value.";
+    }
+}
+class RType extends Instruction{
+    private  String rs="000";
+    private  String rt="000";
+    private  String rd="000";
+    private  String[] reg= {"000","000","000"};
+    private  String shamt="0";
+
+    public RType(String opcode,String rs, String rt, String rd, String shamt,int line) throws InvalidImmediateException, InvalidInstructionException {
+        for (int i = 0; i < reg.length; i++) {
+            if(reg[i].length()>3 || reg==null)
+                throw new InvalidInstructionException();
+        }
+        if(shamt.charAt(0) > '1' || shamt.charAt(0) <'0' || shamt.length()>1)
+            throw  new InvalidImmediateException();
+        this.opcode = opcode;
+        this.reg[0] = rs;
+        this.reg[1] = rt;
+        this.reg[2] = rd;
+        this.shamt = shamt;
+    }
+    public RType(String opcode,String rs, String rt, String rd) {
+        this.opcode = opcode;
+        this.rs = rs;
+        this.rt = rt;
+        this.rd = rd;
+    }
+
+    @Override
+    public String toString() {
+        return opcode+" "+rs +" "+ rt + " " + rd +" "+ shamt;
+    }
+}
+class IType extends Instruction{
+    private final short immediateBits=4;
+    private String rs="000";
+    private String rt="000";
+    private String immediate="0000";
+
+    public IType(String opcode,String rs, String rt, String immediate) throws InvalidImmediateException {
+        this.opcode = opcode;
+        this.rs = rs;
+        this.rt = rt;
+        if(immediate.length()<immediateBits)
+            this.immediate = BitFix(immediate,immediateBits);
+        else if(immediate.length()>immediateBits)
+            throw new InvalidImmediateException();
+        else
+            this.immediate = immediate;
+    }
+
+    @Override
+    public String toString() {
+        return opcode+" "+rs +" "+ rt + " "+immediate;
+    }
+}
+class JType extends Instruction{
+    private short targetBits = 10;
+    private String target="0000000000";
+
+    public JType(String opcode,String target) throws InvalidImmediateException {
+        this.opcode = opcode;
+        if(target.length()<targetBits)
+            this.target = BitFix(target,targetBits);
+        else if(target.length()>targetBits)
+            throw new InvalidImmediateException();
+        else
+            this.target = target;
+    }
+
+    @Override
+    public String toString() {
+        return opcode+ " " + target;
+    }
+}
+class InstructionHandling {
+    public static HashMap<String, String> reg_file = new HashMap();
+    public static HashMap<String, String> op_code = new HashMap();
+
+    public static void main(String args[]) throws FileNotFoundException, InvalidImmediateException {
+        valueInsertionTo_reg_file_and_opCode();
+        Scanner in = new Scanner(new File("Input.txt"));
+        while(in.hasNextLine()){
+            String ins = in.nextLine();
+            System.out.println(ins);
+            String opcode = ins.substring(0, ins.indexOf(' '));
+            ins = ins.substring(ins.indexOf(' '), ins.length()).replaceAll(" ", "");
+            String[] regArray = ins.split(",");
+            if (op_code.containsKey(opcode)) {
+                opcode = op_code.get(opcode);
+                if (Integer.parseInt(opcode,2) < 9) {
+                    String reg1 = reg_file.get(regArray[0]);
+                    String reg2 = reg_file.get(regArray[1]);
+                    String reg3 = reg_file.get(regArray[2]);
+                    System.out.println(new RType(opcode, reg1, reg2, reg3));
+
+
+                } else if (Integer.parseInt(opcode, 2) < 14) {
+                    String reg1 = reg_file.get(regArray[0]);
+                    if (regArray.length == 3) {
+                        String immediate;
+                        String reg2 = reg_file.get(regArray[1]);
+                        if(opcode.equals("1101"))
+                            immediate = new NumberConversion().HexaToBinary(regArray[2]);
+                        else
+                            immediate = new NumberConversion().DecimalToBinary(Integer.parseInt(regArray[2]));
+                        try{
+                            System.out.println(new IType(opcode,reg1,reg2,immediate));
+                        }
+                        catch (InvalidImmediateException e){
+                            System.err.println(e);
+                        }
+                    }
+                    else {
+                        String arr[] = regArray[1].split("\\(");
+                        String immediate = new NumberConversion().DecimalToBinary(Integer.parseInt(arr[0]));
+                        String reg2 = reg_file.get(arr[1].substring(0,arr[1].length()-1));
+                        System.out.println(new IType(opcode,reg1,reg2,immediate));
+                    }
+                }
+                else {
+                    String target = new NumberConversion().HexaToBinary(regArray[0]);
+                    try{
+                        System.out.println(new JType(opcode,target));
+                    }
+                    catch (InvalidImmediateException e){
+                        System.err.println(e);
+                    }
+                }
+            }
+            else
+                try {
+                    throw new InvalidInstructionException();
+                } catch (InvalidInstructionException e) {
+                    System.err.println(e);
+                }
         }
     }
+
+    public static void valueInsertionTo_reg_file_and_opCode() {
+        //declaring register file
+        reg_file.put("$zero", "000");
+        reg_file.put("$intr", "001");
+        reg_file.put("$outr", "010");
+        reg_file.put("$s0", "011");
+        reg_file.put("$s1", "100");
+        reg_file.put("$t0", "101");
+        reg_file.put("$t1", "110");
+        reg_file.put("$t2", "111");
+
+        //op-code declaring
+        op_code.put("and", "0000");
+        op_code.put("or", "0001");
+        op_code.put("add", "0010");
+        op_code.put("sub", "0011");
+        op_code.put("nor", "0100");
+        op_code.put("nand", "0101");
+        op_code.put("in", "0110");
+        op_code.put("out", "0111");
+        op_code.put("slt", "1000");
+        op_code.put("addi", "1001");
+        op_code.put("sll", "1010");
+        op_code.put("lw", "1011");
+        op_code.put("sw", "1011");
+        op_code.put("beq", "1101");
+        op_code.put("j", "1110");
+//            op_code.put("OUT", "1110");*/
+//            op_code.put("j", "1111");
+    }
+
 
 }
 class NumberConversion{
@@ -49,5 +223,9 @@ class NumberConversion{
     public String BinaryToHexaDecimal(String Binary){
         int decimal = BinaryToDecimal(Binary);
         return Integer.toHexString(decimal);
+    }
+    //Converts Hexadecimal to Binary String value
+    public String HexaToBinary(String Hex){
+        return new BigInteger(Hex, 16).toString(2);
     }
 }

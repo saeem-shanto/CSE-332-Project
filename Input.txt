@@ -1,0 +1,23 @@
+nor $s0,$t0,$t1
+and $s0,$s0,$t1
+or $s0,$t0,$t1
+nand $s0,$t0,$t1
+addi $t1, $t0, 10
+addi $s0, $zero, 11
+slt $t2, $s0, $t1
+add $s0, $s0, $s1
+addi $t0, $t1, 5
+addi $s0, $t1, 13
+slt $t2, $s0, $t1
+add $s0, $s0, $s1
+addi $t1, $t0, 10
+addi $t0, $s0, 8
+sll $s0, $s0, 5
+add $t0, $t1, $s0
+sw $y0,8($s1)
+beq $t0,$s0,f
+j 4e
+i 4e
+add $t0, $t1, $s0
+ias sad
+sw $y0,8($s1)
