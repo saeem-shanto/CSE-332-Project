@@ -70,26 +70,34 @@ class RType extends Instruction{
     }
 }
 class IType extends Instruction{
-    private final short immediateBits=4;
+    private final short immediateBits=3;
+    private char sign;
     private String rs="000";
     private String rt="000";
     private String immediate="0000";
 
-    public IType(String opcode,String rs, String rt, String immediate) throws InvalidImmediateException {
+    public IType(String opcode,String rs, String rt, String immediate,char sign) throws InvalidImmediateException {
         this.opcode = opcode;
         this.rs = rs;
         this.rt = rt;
-        if(immediate.length()<immediateBits)
+        if(opcode.equals("1011") || opcode.equals("1100")){
+            if(immediate.length()>2)
+                throw new InvalidImmediateException();
+        }
+        if(sign=='1' && !opcode.equals("1001"))
+            throw  new InvalidImmediateException();
+        else if(immediate.length()<immediateBits)
             this.immediate = BitFix(immediate,immediateBits);
         else if(immediate.length()>immediateBits)
             throw new InvalidImmediateException();
         else
             this.immediate = immediate;
+        this.sign=sign;
     }
 
     @Override
     public String toString() {
-        return opcode+" "+rs +" "+ rt + " "+immediate;
+        return opcode+" "+rs +" "+ rt + " "+sign+immediate;
     }
 }
 class JType extends Instruction{
@@ -119,7 +127,6 @@ class InstructionHandling {
         valueInsertionTo_reg_file_and_opCode();
         PrintStream fileStream = new PrintStream("Output.txt"); // Creates a FileOutputStream
         System.setOut(fileStream);  // all system.out sends data to filestream
-        System.setErr(fileStream); // all system.err sends data to filestream
         Scanner in = new Scanner(new File("Input.txt")); // getting inputs from Input.txt file using scanner class
         while(in.hasNextLine()){            //reading line by line
             String ins = in.nextLine();
@@ -139,31 +146,48 @@ class InstructionHandling {
                     if (regArray.length == 3) {
                         String immediate;
                         String reg2 = reg_file.get(regArray[1]);
-                        if(opcode.equals("1101"))
+                        char sign='0';
+                        if(opcode.equals("1101")) {
                             immediate = new NumberConversion().HexaToBinary(regArray[2]);
-                        else
-                            immediate = new NumberConversion().DecimalToBinary(Integer.parseInt(regArray[2]));
+                        }
+                        else{
+                            int value = Integer.parseInt(regArray[2]);
+                            if(value<0)
+                                sign='1';
+                            immediate = new NumberConversion().DecimalToBinary(value);
+                        }
                         try{
-                            System.out.println(new IType(opcode,reg1,reg2,immediate));
+                            System.out.println(new IType(opcode,reg1,reg2,immediate,sign));
                         }
                         catch (InvalidImmediateException e){
-                            System.err.println(e);
+                            System.out.println(e);
                         }
                     }
-                    else {                                          // rest are j-type
+                    else {
+                        try{
                         String arr[] = regArray[1].split("\\(");
+                        int value = Integer.parseInt(arr[0]);
+                        char sign='0';
+                        if(value<0)
+                            sign='1';
                         String immediate = new NumberConversion().DecimalToBinary(Integer.parseInt(arr[0]));
                         String reg2 = reg_file.get(arr[1].substring(0,arr[1].length()-1));
-                        System.out.println(new IType(opcode,reg1,reg2,immediate));
+
+                            System.out.println(new IType(opcode,reg1,reg2,immediate,sign));
+                        }
+                        catch (InvalidImmediateException e ){
+                            System.out.println(e);
+                        }
                     }
                 }
+                // rest are j-type
                 else {
                     String target = new NumberConversion().HexaToBinary(regArray[0]);
                     try{
                         System.out.println(new JType(opcode,target));
                     }
                     catch (InvalidImmediateException e){
-                        System.err.println(e);
+                        System.out.println(e);
                     }
                 }
             }
@@ -171,7 +195,7 @@ class InstructionHandling {
                 try {
                     throw new InvalidInstructionException();
                 } catch (InvalidInstructionException e) {
-                    System.err.println(e);
+                    System.out.println(e);
                 }
         }
     }
@@ -215,8 +239,10 @@ class NumberConversion{
         return Integer.parseInt(Binary, 2);
     }
     //Converts Decimal Integer Value to Binary String value  using java built-in Integer class's method
-    public String  DecimalToBinary(int Decimal){
-        return Integer.toBinaryString(Decimal);
+    public String  DecimalToBinary(int decimal){
+        if(decimal < 0)
+            return Integer.toBinaryString(~decimal+1);
+        return Integer.toBinaryString(decimal);
     }
     //Converts Binary String to Hexadecimal String value  using java built-in Integer class's method
     public String BinaryToHexaDecimal(String Binary){
