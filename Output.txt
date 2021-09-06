@@ -1,39 +1,43 @@
-nor $s0,$t0,$t1
+nor $s0 ,$t0,$t1
 0100 011 101 110 0
-and $s0,$s0,$t1
+and $s0 ,$s0,$t1
 0000 011 011 110 0
-or $s0,$t0,$t1
+or $s0 ,$t0,$t1
 0001 011 101 110 0
-nand $s0,$t0,$t1
+nand $s0 ,$t0,$t1
 0101 011 101 110 0
-addi $t1, $t0, 10
-1001 110 101 1010
-addi $s0, $zero, 11
-1001 011 000 1011
+sub $s0,$t0,$t1
+0011 011 101 110 0
+addi $t1 , $t0, -1
+1001 110 101 1001
+addi $s0, $zero, 7
+1001 011 000 0111
 slt $t2, $s0, $t1
 1000 111 011 110 0
 add $s0, $s0, $s1
 0010 011 011 100 0
-addi $t0, $t1, 5
-1001 101 110 0101
+sub $s0,$s0,$s0
+0011 011 011 011 0
+addi $t0, $t1, -5
+1001 101 110 1101
 addi $s0, $t1, 13
-1001 011 110 1101
+Invalid immediate value.
 slt $t2, $s0, $t1
 1000 111 011 110 0
 add $s0, $s0, $s1
 0010 011 011 100 0
 addi $t1, $t0, 10
-1001 110 101 1010
+Invalid immediate value.
 addi $t0, $s0, 8
-1001 101 011 1000
+Invalid immediate value.
 sll $s0, $s0, 5
 1010 011 011 0101
 add $t0, $t1, $s0
 0010 101 110 011 0
 sw $y0,8($s1)
-1011 null 100 1000
+Invalid immediate value.
 beq $t0,$s0,f
-1101 101 011 1111
+Invalid immediate value.
 j 4e
 1110 0001001110
 i 4e
@@ -42,5 +46,5 @@ add $t0, $t1, $s0
 0010 101 110 011 0
 ias sad
 Invalid Instruction.
-sw $y0,8($s1)
-1011 null 100 1000
+sw $y0,-8($s1)
+Invalid immediate value.
