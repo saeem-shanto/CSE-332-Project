@@ -7,6 +7,7 @@ import java.util.Scanner;
 class Instruction{
     String opcode="0000";
     public static String BitFix(String a,int bit){
+        // 0 = 000
         String out="";
         int leadingBit = bit - a.length();
         for (int i = 0; i <leadingBit ; i++) {
@@ -45,10 +46,6 @@ class RType extends Instruction{
     private  String shamt="0";
 
     public RType(String opcode,String rs, String rt, String rd, String shamt,int line) throws InvalidImmediateException, InvalidInstructionException {
-        for (int i = 0; i < reg.length; i++) {
-            if(reg[i].length()>3 || reg==null)
-                throw new InvalidInstructionException();
-        }
         if(shamt.charAt(0) > '1' || shamt.charAt(0) <'0' || shamt.length()>1)
             throw  new InvalidImmediateException();
         this.opcode = opcode;
@@ -57,7 +54,7 @@ class RType extends Instruction{
         this.reg[2] = rd;
         this.shamt = shamt;
     }
-    public RType(String opcode,String rs, String rt, String rd) {
+    public RType(String opcode,String rd, String rs, String rt) {
         this.opcode = opcode;
         this.rs = rs;
         this.rt = rt;
@@ -76,7 +73,7 @@ class IType extends Instruction{
     private String rt="000";
     private String immediate="0000";
 
-    public IType(String opcode,String rs, String rt, String immediate,char sign) throws InvalidImmediateException {
+    public IType(String opcode,String rt, String rs, String immediate,char sign) throws InvalidImmediateException {
         this.opcode = opcode;
         this.rs = rs;
         this.rt = rt;

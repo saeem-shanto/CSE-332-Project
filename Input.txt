@@ -1,5 +1,5 @@
-nor $s0 ,$t0,$t1
-and $s0 ,$s0,$t1
+nor $s0,$t0,$t1
+and $s0,$s0,$t1
 or $s0 ,$t0,$t1
 nand $s0 ,$t0,$t1
 sub $s0,$t0,$t1
