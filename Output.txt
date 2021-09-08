@@ -34,8 +34,8 @@ sll $s0, $s0, 5
 1010 011 011 0101
 add $t0, $t1, $s0
 0010 110 011 101 0
-sw $y0,8($s1)
-Invalid immediate value.
+sw $y0,2($s1)
+1011 100 000 0010
 beq $t0,$s0,f
 Invalid immediate value.
 j 4e
