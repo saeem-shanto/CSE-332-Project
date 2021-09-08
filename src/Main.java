@@ -78,6 +78,7 @@ class IType extends Instruction{
         this.rs = rs;
         this.rt = rt;
         if(opcode.equals("1011") || opcode.equals("1100")){
+            this.rt="000";
             if(immediate.length()>2)
                 throw new InvalidImmediateException();
         }
