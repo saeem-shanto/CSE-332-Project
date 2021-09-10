@@ -1,8 +1,19 @@
-add $t0, $t1, $s0
-j 4e
-i 4e
-add $t0, $t1, $s0
-addi $t1,$t0,-5
-sw $y0,-8($s1)
-lw $t0,5($s1)
-sw $t0,7($s1)
+add $t0,               $tahsin                        , $shanto
+add $t0, $tanzil , $shanto
+--> space valid
+
+addi
+addi $tanzil,$tahsin, 7
+addi $tanzil,$tahsin,-5
+--> we handle negative value with sign bit
+
+
+lw $t0,5($sheam)
+sw $t0,-7($shanto)
+sw $t0, 5($tahsin)
+
+j
+j 2,$t0,$t0
+in $inpr
+
+out $outr
