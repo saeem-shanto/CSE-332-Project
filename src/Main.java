@@ -73,13 +73,13 @@ class IType extends Instruction{
     private String rt="000";
     private String immediate="0000";
 
-    public IType(String opcode,String rt, String rs, String immediate,char sign) throws InvalidImmediateException {
+    public IType(String opcode,String rs, String rt, String immediate,char sign) throws InvalidImmediateException {
         this.opcode = opcode;
         this.rs = rs;
         this.rt = rt;
         if(opcode.equals("1011") || opcode.equals("1100")){
-            this.rt="000";
-            if(immediate.length()>2)
+//            this.rt="000";
+            if(immediate.length()>15)
                 throw new InvalidImmediateException();
         }
         if(sign=='1' && !opcode.equals("1001"))
