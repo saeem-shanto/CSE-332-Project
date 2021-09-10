@@ -1,16 +1,21 @@
-add $t0, $t1, $s0
-0010 110 011 101 0
-j 4e
-1110 0001001110
-i 4e
+0010 101 111 011 0
+0010 101 110 011 0
 Invalid Instruction.
-add $t0, $t1, $s0
-0010 110 011 101 0
-addi $t1,$t0,-5
-1001 110 101 1101
-sw $y0,-8($s1)
-Invalid immediate value.
-lw $t0,5($s1)
+Invalid Instruction
+Invalid Instruction
+111
+1001 110 111 0111
+111
+1001 110 111 1101
+Invalid Instruction.
+Invalid Instruction
+Invalid Instruction
 1011 101 100 0101
-sw $t0,7($s1)
-1011 101 100 0111
+Invalid Instruction
+1011 101 111 0101
+Invalid Instruction
+Invalid Instruction
+Invalid target.
+0110 000 001 000 0
+Invalid Instruction
+0111 000 010 000 0
