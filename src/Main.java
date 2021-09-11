@@ -138,7 +138,6 @@ class InstructionHandling {
             try{
 
                 String ins = in.nextLine();
-                System.out.println(ins);
                 String opcode = ins.substring(0, ins.indexOf(' '));
                 if(op_code.containsKey(opcode) && opcode.equals("j")){
                     ins = ins.substring(ins.indexOf(' '), ins.length()).trim();
