@@ -155,29 +155,26 @@ class InstructionHandling {
                 else if(op_code.containsKey(opcode) && opcode.equals("in") ){
                     ins = ins.substring(ins.indexOf(' '), ins.length()).trim();
                     try {
-                        if(ins.equals("$inpr")){
-                            System.out.println(new RType(op_code.get(opcode),"000",reg_file.get(ins),"000"));
+                        if(reg_file.containsKey(ins)){
+                            System.out.println(new RType(op_code.get(opcode),"000","000",reg_file.get(ins)));
                         }
                         else
-                            throw new InvalidInstructionException();
-                    } catch (InvalidInstructionException e) {
-                        System.out.println(e);
+                            throw new InvalidRegisterNameException();
                     } catch (InvalidRegisterNameException e) {
                         System.out.println(e);
-                    } finally {
+                    }
+                    finally {
                         continue;
                     }
                 }
                 else if(op_code.containsKey(opcode) && opcode.equals("out") ){
                     ins = ins.substring(ins.indexOf(' '), ins.length()).trim();
                     try {
-                        if(ins.equals("$outr")){
+                        if(reg_file.containsKey(ins)){
                             System.out.println(new RType(op_code.get(opcode),"000",reg_file.get(ins),"000"));
                         }
                         else
-                            throw new InvalidInstructionException();
-                    } catch (InvalidInstructionException e) {
-                        System.out.println(e);
+                            throw new InvalidRegisterNameException();
                     } catch (InvalidRegisterNameException e) {
                         System.out.println(e);
                     } finally {

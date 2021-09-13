@@ -16,6 +16,6 @@ Invalid Instruction
 Invalid Instruction
 Invalid Instruction
 Invalid target.
-0110 000 001 000 0
+0110 000 000 110 0
 Invalid Instruction
-0111 000 010 000 0
+0111 000 011 000 0

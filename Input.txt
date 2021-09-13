@@ -14,6 +14,6 @@ sw $t0, 5($tahsin)
 
 j
 j 2,$t0,$t0
-in $inpr
+in $tanzil
 
-out $outr
+out $shanto
