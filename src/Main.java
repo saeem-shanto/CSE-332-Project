@@ -174,9 +174,9 @@ public class Main {
 //            System.setOut(fileStream);  // all system.out sends data to filestream
             Scanner in = new Scanner(new File("Input.txt")); // getting inputs from Input.txt file using scanner class
             while (in.hasNextLine()) {            //reading line by line
+                String ins = in.nextLine();
+                String temp = ins;
                 try {
-
-                    String ins = in.nextLine();
                     String opcode = ins.substring(0, ins.indexOf(' '));
                     if (op_code.containsKey(opcode) && opcode.equals("j")) {
                         ins = ins.substring(ins.indexOf(' '), ins.length()).trim();
@@ -186,9 +186,10 @@ public class Main {
                             JType code = new JType(opcode, target);
                             fwMachineCode.write(code+"\n");
                             fwHexCode.write(code.HexCode()+"\n");
-                            System.out.println(new JType(opcode, target));
                         } catch (NumberFormatException e) {
+                            System.out.print(temp+ " : ");
                             System.out.println("Invalid target.");
+                            e.printStackTrace();
                         } finally {
                             continue;
                         }
@@ -199,11 +200,12 @@ public class Main {
                                 RType code = new RType(op_code.get(opcode), "000", "000", reg_file.get(ins));
                                 fwMachineCode.write(code+"\n");
                                 fwHexCode.write(code.HexCode()+"\n");
-                                System.out.println(code.HexCode());
                             } else
                                 throw new InvalidRegisterNameException();
                         } catch (InvalidRegisterNameException e) {
+                            System.out.print(temp+ " : ");
                             System.out.println(e);
+                            e.printStackTrace();
                         } finally {
                             continue;
                         }
@@ -215,11 +217,12 @@ public class Main {
 
                                 fwMachineCode.write(code+"\n");
                                 fwHexCode.write(code.HexCode()+"\n");
-                                System.out.println(new RType(op_code.get(opcode), "000", reg_file.get(ins), "000"));
                             } else
                                 throw new InvalidRegisterNameException();
                         } catch (InvalidRegisterNameException e) {
+                            System.out.print(temp+ " : ");
                             System.out.println(e);
+                            e.printStackTrace();
                         } finally {
                             continue;
                         }
@@ -238,13 +241,13 @@ public class Main {
                                 String reg1 = reg_file.get(regArray[0]);
                                 String reg2 = reg_file.get(regArray[1]);
                                 String reg3 = reg_file.get(regArray[2]);
-//                              System.out.println(reg1+" " + reg2 + " "+reg3);
                                 RType code = new RType(opcode, reg1, reg2, reg3);
                                 fwMachineCode.write(code+"\n");
                                 fwHexCode.write(code.HexCode()+"\n");
-                                System.out.println(new RType(opcode, reg1, reg2, reg3));
                             } catch (Exception e) {
-                                System.out.println("Invalid Exception");
+                                System.out.print(temp+ " : ");
+                                System.out.println(e);
+                                e.printStackTrace();
                             }
                         } else if (Integer.parseInt(opcode, 2) < 14) {   // our i-type instructions are to 1101 binary
                             regArray[0] = regArray[0].trim();
@@ -271,9 +274,10 @@ public class Main {
                                     IType code = new IType(opcode, reg1, reg2, immediate, sign);
                                     fwMachineCode.write(code+"\n");
                                     fwHexCode.write(code.HexCode()+"\n");
-                                    System.out.println(new IType(opcode, reg1, reg2, immediate, sign));
                                 } catch (InvalidImmediateException e) {
+                                    System.out.print(temp+ " : ");
                                     System.out.println(e);
+                                    e.printStackTrace();
                                 }
                             } else {
                                 try {
@@ -290,25 +294,31 @@ public class Main {
                                     IType code = new IType(opcode, reg1, reg2, immediate, sign);
                                     fwMachineCode.write(code+"\n");
                                     fwHexCode.write(code.HexCode()+"\n");
-                                    System.out.println(new IType(opcode, reg1, reg2, immediate, sign));
                                 }
                                 catch (Exception e) {
-                                    System.out.println("Invalid Instruction");
+                                    System.out.print(temp+ " : ");
+                                    System.out.println(e);
+                                    e.printStackTrace();
                                 }
                             }
                         }
                         // rest are j-type
                         else {
+                            System.out.print(temp+ " : ");
                             System.out.println("Invalid Instruction");
                         }
                     } else
                         try {
                             throw new InvalidInstructionException();
                         } catch (InvalidInstructionException e) {
+                            System.out.print(temp+ " : ");
                             System.out.println(e);
+                            e.printStackTrace();
                         }
                 } catch (Exception e) {
+                    System.out.print(temp+ " : ");
                     System.out.println("Invalid Instruction");
+                    e.printStackTrace();
                 }
             }
             fwMachineCode.close();
