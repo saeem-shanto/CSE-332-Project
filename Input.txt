@@ -1,3 +1,6 @@
+add $shanto,$sheam,$tahsin
+addi $tanzil,$t0,5
+j 5
 add $t0,               $tahsin                        , $shanto
 add $t0, $tanzil , $shanto
 --> space valid
