@@ -1,6 +1,4 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintStream;
+import java.io.*;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -20,30 +18,27 @@ class Instruction{
     }
 }
 class InvalidInstructionException extends Exception{
-    public InvalidInstructionException() {
+    public InvalidInstructionException(String instruction) {
+        super("Invalid Instruction :  "+instruction);
     }
-
-    @Override
-    public String toString() {
-        return "Invalid Instruction.";
+    public InvalidInstructionException() {
+        super("Invalid Instruction.");
     }
 }
 class InvalidRegisterNameException extends Exception{
-    public InvalidRegisterNameException() {
+    public InvalidRegisterNameException(String instruction) {
+        super("Invalid Register Name  :  "+instruction);
     }
-
-    @Override
-    public String toString() {
-        return "Invalid Register Name.";
+    public InvalidRegisterNameException() {
+        super("Invalid Register Name.");
     }
 }
 class InvalidImmediateException extends Exception{
     public InvalidImmediateException() {
+        super("Invalid immediate value.");
     }
-
-    @Override
-    public String toString() {
-        return "Invalid immediate value.";
+    public InvalidImmediateException(String instruction) {
+        super("Invalid immediate value  : "+instruction);
     }
 }
 class RType extends Instruction{
@@ -73,7 +68,7 @@ class RType extends Instruction{
 
     @Override
     public String toString() {
-        return opcode+" "+rs +" "+ rt + " " + rd +" "+ shamt;
+        return opcode+rs + rt + rd + shamt;
     }
 }
 class IType extends Instruction{
@@ -104,7 +99,7 @@ class IType extends Instruction{
 
     @Override
     public String toString() {
-        return opcode+" "+rs +" "+ rt + " "+sign+immediate;
+        return opcode+rs + rt + sign+immediate;
     }
 }
 class JType extends Instruction{
@@ -123,30 +118,38 @@ class JType extends Instruction{
 
     @Override
     public String toString() {
-        return opcode+ " " + target;
+        return opcode+ target;
     }
 }
 class InstructionHandling {
     public static HashMap<String, String> reg_file = new HashMap();
     public static HashMap<String, String> op_code = new HashMap();
-    public static void main(String args[]) throws FileNotFoundException, InvalidImmediateException {
+    public static void main(String args[]) throws IOException, InvalidImmediateException {
         valueInsertionTo_reg_file_and_opCode();
-        PrintStream fileStream = new PrintStream("Output.txt"); // Creates a FileOutputStream
-        System.setOut(fileStream);  // all system.out sends data to filestream
+        File hexMachine = new File("OutputMachine.txt"); // Creates a FileOutputStream
+        File hexaCode = new File("OutputHexa.txt");
+        FileWriter fwMachineCode = new FileWriter(hexMachine);
+        FileWriter fwHexCode = new FileWriter(hexaCode);
+        fwHexCode.write("v2.0 raw\n");
         Scanner in = new Scanner(new File("Input.txt")); // getting inputs from Input.txt file using scanner class
         while(in.hasNextLine()){            //reading line by line
+            boolean valid=true;
             try{
-
                 String ins = in.nextLine();
+                String temp = ins;
                 String opcode = ins.substring(0, ins.indexOf(' '));
+                NumberConversion numberConversion = new NumberConversion();
                 if(op_code.containsKey(opcode) && opcode.equals("j")){
                     ins = ins.substring(ins.indexOf(' '), ins.length()).trim();
                     try{
                         String target = new NumberConversion().HexaToBinary(ins);
-                        System.out.println(new JType(opcode,target));
+                        String str = new JType(opcode,target).toString();
+                        fwMachineCode.write(str+"\n");
+                        fwHexCode.write(numberConversion.BinaryToHexDecimal(str)+"\n");
                     }
                     catch ( NumberFormatException e){
-                        System.out.println("Invalid target.");
+                        valid = false;
+                       throw new InvalidInstructionException(temp);
                     }
                     finally {
                         continue;
@@ -156,12 +159,14 @@ class InstructionHandling {
                     ins = ins.substring(ins.indexOf(' '), ins.length()).trim();
                     try {
                         if(reg_file.containsKey(ins)){
-                            System.out.println(new RType(op_code.get(opcode),"000","000",reg_file.get(ins)));
+                            String str =new RType(op_code.get(opcode),"000","000",reg_file.get(ins)).toString();
+                            fwMachineCode.write(str+"\n");
+                            fwHexCode.write(numberConversion.BinaryToHexDecimal(str)+"\n");
                         }
                         else
-                            throw new InvalidRegisterNameException();
+                            throw new InvalidRegisterNameException(temp);
                     } catch (InvalidRegisterNameException e) {
-                        System.out.println(e);
+                        valid = false;
                     }
                     finally {
                         continue;
@@ -171,12 +176,14 @@ class InstructionHandling {
                     ins = ins.substring(ins.indexOf(' '), ins.length()).trim();
                     try {
                         if(reg_file.containsKey(ins)){
-                            System.out.println(new RType(op_code.get(opcode),"000",reg_file.get(ins),"000"));
+                            String str = new RType(op_code.get(opcode),"000",reg_file.get(ins),"000").toString();
+                            fwMachineCode.write(str+"\n");
+                            fwHexCode.write(numberConversion.BinaryToHexDecimal(str)+"\n");
                         }
                         else
-                            throw new InvalidRegisterNameException();
+                            throw new InvalidRegisterNameException(temp);
                     } catch (InvalidRegisterNameException e) {
-                        System.out.println(e);
+                        valid = false;
                     } finally {
                         continue;
                     }
@@ -190,11 +197,13 @@ class InstructionHandling {
                             String reg1 = reg_file.get(regArray[0].trim());
                             String reg2 = reg_file.get(regArray[1].trim());
                             String reg3 = reg_file.get(regArray[2].trim());
-//                    System.out.println(reg1+" " + reg2 + " "+reg3);
-
-                            System.out.println(new RType(opcode, reg1, reg2, reg3));
+                            String str = new RType(opcode, reg1, reg2, reg3).toString();
+                            fwMachineCode.write(str+"\n");
+                            fwHexCode.write(numberConversion.BinaryToHexDecimal(str)+"\n");
                         } catch (Exception e) {
-                            System.out.println("Invalid Exception");
+                            String str ="Invalid target :"+temp;
+                            System.out.println(temp);
+                            valid = false;
                         }
                     } else if (Integer.parseInt(opcode, 2) < 14) {   // our i-type instructions are to 1101 binary
                         String reg1 = reg_file.get(regArray[0].trim());
@@ -214,10 +223,12 @@ class InstructionHandling {
                                 immediate = new NumberConversion().DecimalToBinary(value);
                             }
                             try{
-                                System.out.println(new IType(opcode,reg1,reg2,immediate,sign));
+                                String str = new IType(opcode,reg1,reg2,immediate,sign).toString();
+                                fwMachineCode.write(str+"\n");
+                                fwHexCode.write(numberConversion.BinaryToHexDecimal(str)+"\n");
                             }
                             catch (InvalidImmediateException e){
-                                System.out.println(e);
+
                             }
                         }
                         else {
@@ -232,30 +243,33 @@ class InstructionHandling {
                                 String reg2 = reg_file.get(arr[1].substring(0,arr[1].length()-1));
                                 if(!reg_file.containsKey(arr[1].substring(0,arr[1].length()-1)))
                                     throw new InvalidInstructionException();
-                                System.out.println(new IType(opcode,reg1,reg2,immediate,sign));
+                                String str = new IType(opcode,reg1,reg2,immediate,sign).toString();
+                                fwMachineCode.write(str+"\n");
+                                fwHexCode.write(numberConversion.BinaryToHexDecimal(str)+"\n");
                             }
                             catch (Exception e ){
-                                System.out.println("Invalid Instruction");
+                                 throw  new InvalidInstructionException(temp);
                             }
                         }
                     }
                     // rest are j-type
                     else {
-                        System.out.println("Invalid Instruction");
+                        throw  new InvalidInstructionException(temp);
                     }
                 }
                 else
                     try {
-                        throw new InvalidInstructionException();
+                        throw new InvalidInstructionException(temp);
                     } catch (InvalidInstructionException e) {
-                        System.out.println(e);
                     }
             } catch(Exception e){
-                System.out.println("Invalid Instruction");
+                System.out.println("Invalid Instruction.");
             }
         }
-    }
+        fwMachineCode.close();
+        fwHexCode.close();
 
+    }
 
     public static void valueInsertionTo_reg_file_and_opCode() {
         //declaring register file
@@ -328,8 +342,9 @@ class NumberConversion{
         return Integer.toBinaryString(decimal);
     }
     //Converts Binary String to Hexadecimal String value  using java built-in Integer class's method
-    public String BinaryToHexaDecimal(String Binary){
-        int decimal = BinaryToDecimal(Binary);
+    public String BinaryToHexDecimal(String binary){
+        binary = "00"+binary;
+        int decimal = BinaryToDecimal(binary);
         return Integer.toHexString(decimal);
     }
     //Converts Hexadecimal to Binary String value
