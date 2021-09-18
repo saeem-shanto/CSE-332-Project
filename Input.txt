@@ -1,17 +1,13 @@
 add $t0,               $tahsin                        , $shanto
 add $t0, $tanzil , $shanto
 --> space valid
-
 addi
 addi $tanzil,$tahsin, 7
 addi $tanzil,$tahsin,-5
 --> we handle negative value with sign bit
-
-
 lw $t0,5($sheam)
 sw $t0,-7($shanto)
 sw $t0, 5($tahsin)
-
 j
 j 2,$t0,$t0
 in $tanzil
