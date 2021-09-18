@@ -17,35 +17,57 @@ class Instruction{
         return out;
     }
 }
+
 class InvalidInstructionException extends Exception{
+    public InvalidInstructionException() {
+    }
+
+    public InvalidInstructionException(String message) {
+        super(message);
+    }
 }
+
 class InvalidRegisterNameException extends Exception{
+    public InvalidRegisterNameException() {
+    }
+
+    public InvalidRegisterNameException(String message) {
+        super(message);
+    }
 }
 class InvalidImmediateException extends Exception{
+    public InvalidImmediateException() {
+    }
+
+    public InvalidImmediateException(String message) {
+        super(message);
+    }
 }
 class RType extends Instruction{
     private  String rs="000";
     private  String rt="000";
     private  String rd="000";
-    private  String[] reg= {"000","000","000"};
     private  String shamt="0";
 
-    public RType(String opcode,String rs, String rt, String rd, String shamt) throws InvalidImmediateException, InvalidInstructionException {
+    public RType(String opcode,String rs, String rt, String rd, String shamt) throws InvalidImmediateException, InvalidRegisterNameException {
         if(shamt.charAt(0) != '1' || shamt.charAt(0) !='0' || shamt.length()>1)
             throw  new InvalidImmediateException();
         this.opcode = opcode;
-        this.reg[0] = rs;
-        this.reg[1] = rt;
-        this.reg[2] = rd;
-        this.shamt = shamt;
+        this.rs = rs;
+        this.rt = rt;
+        this.rd = rd;
+        if(rs==null || rd == null || rt == null) {
+            throw  new InvalidRegisterNameException();
+        }
     }
     public RType(String opcode,String rs, String rt, String rd) throws InvalidRegisterNameException {
         this.opcode = opcode;
         this.rs = rs;
         this.rt = rt;
         this.rd = rd;
-        if(rs==null || rd == null || rt == null)
+        if(rs==null || rd == null || rt == null) {
             throw  new InvalidRegisterNameException();
+        }
     }
 
     @Override
@@ -103,7 +125,7 @@ class JType extends Instruction{
         return opcode+ target;
     }
 }
-public class InstructionHandling {
+public class Main {
     public static HashMap<String, String> reg_file = new HashMap();
     public static HashMap<String, String> op_code = new HashMap();
     public static void main(String args[]) throws IOException, InvalidImmediateException {
@@ -114,10 +136,9 @@ public class InstructionHandling {
         FileWriter fwHexCode = new FileWriter(hexaCode);
         fwHexCode.write("v2.0 raw\n");
         Scanner in = new Scanner(new File("Input.txt")); // getting inputs from Input.txt file using scanner class
-        boolean valid = true;
         while(in.hasNextLine()){            //reading line by line
-            valid=true;
             try{
+                System.out.println();
                 String ins = in.nextLine();
                 String temp = ins;
                 System.out.print(temp);
@@ -132,7 +153,7 @@ public class InstructionHandling {
                         fwHexCode.write(numberConversion.BinaryToHexDecimal(str)+"\n");
                     }
                     catch ( NumberFormatException e){
-                        valid = false;
+                        System.out.print("\t---  Invalid");
                     }
                     finally {
                         continue;
@@ -149,7 +170,7 @@ public class InstructionHandling {
                         else
                             throw new InvalidRegisterNameException();
                     } catch (InvalidRegisterNameException e) {
-                        valid = false;
+                        System.out.print("\t---  Invalid");
                     }
                     finally {
                         continue;
@@ -166,7 +187,7 @@ public class InstructionHandling {
                         else
                             throw new InvalidRegisterNameException();
                     } catch (InvalidRegisterNameException e) {
-                        valid = false;
+                        System.out.print("\t---  Invalid");
                     } finally {
                         continue;
                     }
@@ -176,17 +197,19 @@ public class InstructionHandling {
                 if (op_code.containsKey(opcode)) {
                     opcode = op_code.get(opcode);
                     if (Integer.parseInt(opcode,2) < 9) {           // our r-type instructions are to 1000 binary
-                        try {
+                        try{
                             String reg1 = reg_file.get(regArray[0].trim());
                             String reg2 = reg_file.get(regArray[1].trim());
                             String reg3 = reg_file.get(regArray[2].trim());
                             String str = new RType(opcode, reg1, reg2, reg3).toString();
                             fwMachineCode.write(str+"\n");
                             fwHexCode.write(numberConversion.BinaryToHexDecimal(str)+"\n");
-                        } catch (Exception e) {
-                            valid = false;
                         }
-                    } else if (Integer.parseInt(opcode, 2) < 14) {   // our i-type instructions are to 1101 binary
+                        catch (InvalidRegisterNameException e){
+                            System.out.println("\t---  Invalid");
+                        }
+                    }
+                    else if (Integer.parseInt(opcode, 2) < 14) {   // our i-type instructions are to 1101 binary
                         String reg1 = reg_file.get(regArray[0].trim());
                         if (regArray.length == 3) {
                             String immediate;
@@ -208,7 +231,7 @@ public class InstructionHandling {
                                 fwHexCode.write(numberConversion.BinaryToHexDecimal(str)+"\n");
                             }
                             catch (InvalidImmediateException e){
-                                valid = false;
+                                System.out.print("\t---  Invalid");
                             }
                         }
                         else {
@@ -222,7 +245,6 @@ public class InstructionHandling {
                                 String immediate = new NumberConversion().DecimalToBinary(Integer.parseInt(arr[0].trim()));
                                 String reg2 = reg_file.get(arr[1].substring(0,arr[1].length()-1));
                                 if(!reg_file.containsKey(arr[1].substring(0,arr[1].length()-1))){
-                                    valid = false;
                                     throw new InvalidInstructionException();
                                 }
                                 String str = new IType(opcode,reg1,reg2,immediate,sign).toString();
@@ -230,37 +252,25 @@ public class InstructionHandling {
                                 fwHexCode.write(numberConversion.BinaryToHexDecimal(str)+"\n");
                             }
                             catch (Exception e ){
-                                valid = false;
+                                System.out.print("\t---  Invalid");
                             }
                         }
                     }
-                    // rest are j-type
-                    else {
-                        valid = false;
-                    }
                 }
-                else
+                else{
                     try {
-                        valid = false;
                         throw new InvalidInstructionException();
                     } catch (InvalidInstructionException e) {
-                        valid = false;
+                        System.out.print("\t---  Invalid");
+                        continue;
                     }
+                }
             } catch(Exception e){
-                valid = false;
+                System.out.print("\t---  Invalid");
             }
-            if(valid)
-                System.out.println("\t---   Valid");
-            else
-                System.out.println("\t---  Invalid");
         }
-        if(valid)
-            System.out.println("\t---   Valid");
-        else
-            System.out.println("\t---  Invalid");
         fwMachineCode.close();
         fwHexCode.close();
-
     }
 
     public static void valueInsertionTo_reg_file_and_opCode() {
