@@ -103,7 +103,7 @@ class JType extends Instruction{
         return opcode+ target;
     }
 }
-class InstructionHandling {
+public class InstructionHandling {
     public static HashMap<String, String> reg_file = new HashMap();
     public static HashMap<String, String> op_code = new HashMap();
     public static void main(String args[]) throws IOException, InvalidImmediateException {
