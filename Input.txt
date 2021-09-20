@@ -1,17 +1,15 @@
-add $shanto,$sheam,$tahsin
-addi $tanzil,$t0,5
-j 5
-add $t0,               $tahsin                        , $shanto
-add $t0, $tanzil , $shanto
---> space valid
-addi
-addi $tanzil,$tahsin, 7
-addi $tanzil,$tahsin,-5
---> we handle negative value with sign bit
-lw $t0,5($sheam)
-sw $t0,-7($shanto)
-sw $t0, 5($tahsin)
-j
-j 2,$t0,$t0
-in $tanzil
-out $shanto
+and $shanto,$t0,$tanzil
+or $shanto,$t0,$tanzil
+add $shanto,$t0,$tanzil
+sub $shanto,$t0,$tanzil
+nor $shanto,$t0,$tanzil
+nand $shanto,$t0,$tanzil
+in $shanto
+out $t0
+slt $t0,$shanto,$sheam
+addi $t0,$shanto,5
+sll $shanto,$t0,1
+lw $t0,4($sheam)
+sw $t0,3($sheam)
+beq $t0,$shanto,5
+j 3
