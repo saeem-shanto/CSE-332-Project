@@ -197,7 +197,7 @@ public class Main {
                         ins = ins.substring(ins.indexOf(' '), ins.length()).trim();
                         try {
                             if (reg_file.containsKey(ins)) {
-                                RType code = new RType(op_code.get(opcode), "000", "000", reg_file.get(ins));
+                                RType code = new RType(op_code.get(opcode), "000", "000",reg_file.get(ins));
                                 fwMachineCode.write(code+"\n");
                                 fwHexCode.write(code.HexCode()+"\n");
                             } else
