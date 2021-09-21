@@ -98,7 +98,7 @@ class IType extends Instruction {
         this.opcode = opcode;
         this.rs = rs;
         this.rt = rt;
-        if (opcode.equals("1011") || opcode.equals("1100")) {
+        if (opcode.equals("1011") || opcode.equals("1011") || opcode.equals("1100")) {
             if (immediate.length() > 15)
                 throw new InvalidImmediateException();
         }
@@ -110,7 +110,7 @@ class IType extends Instruction {
             throw new InvalidImmediateException();
         else
             this.immediate = immediate;
-        if(opcode.equals("1011") || opcode.equals("1010")){
+        if(opcode.equals("1010")){
             String temp = rt;
             this.rt = this.rs;
             this.rs = temp;
@@ -173,11 +173,11 @@ public class Main {
 //            PrintStream fileStream = new PrintStream("Output.txt"); // Creates a FileOutputStream
 //            System.setOut(fileStream);  // all system.out sends data to filestream
             Scanner in = new Scanner(new File("Input.txt")); // getting inputs from Input.txt file using scanner class
-            while (in.hasNextLine()) {            //reading line by line
+            while (in.hasNext()) {            //reading line by line
                 String ins = in.nextLine();
                 String temp = ins;
                 try {
-                    String opcode = ins.substring(0, ins.indexOf(' '));
+                    String opcode = ins.substring(0, ins.indexOf(" "));
                     if (op_code.containsKey(opcode) && opcode.equals("j")) {
                         ins = ins.substring(ins.indexOf(' '), ins.length()).trim();
                         try {
