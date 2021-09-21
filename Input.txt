@@ -1,11 +1,10 @@
-lw $t0,5($shanto)
-lw $tanzil,3($tahsin)
+addi $tanzil,$tanzil,7
+addi $tahsin,$tahsin,3
+addi $sheam,$sheam,0
+sub $tanzil,$tahsin,$tanzil
 addi $inpr,$inpr,0
-sub $t0,$tanzil,$t0
-beq $sheam,$inpr,1
-add $t0,$sheam,$sheam
+beq $inpr,$tanzil,3
+add $sheam,$inpr,$sheam
 addi $inpr,$inpr,1
-j 4
-sw $tanzil,3($shanto)
-lw $tanzil,3($shanto)
-
+j 5
+out $sheam
