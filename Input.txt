@@ -1,2 +1,11 @@
-beq $sheam,$shanto,2
-j 10
+lw $t0,5($shanto)
+lw $tanzil,3($tahsin)
+addi $inpr,$inpr,0
+sub $t0,$tanzil,$t0
+beq $sheam,$inpr,1
+add $t0,$sheam,$sheam
+addi $inpr,$inpr,1
+j 4
+sw $tanzil,3($shanto)
+lw $tanzil,3($shanto)
+
