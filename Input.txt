@@ -1,15 +1,2 @@
-and $shanto,$t0,$tanzil
-or $shanto,$t0,$tanzil
-add $shanto,$t0,$tanzil
-sub $shanto,$t0,$tanzil
-nor $shanto,$t0,$tanzil
-nand $shanto,$t0,$tanzil
-in $shanto
-out $t0
-slt $t0,$shanto,$sheam
-addi $t0,$shanto,5
-sll $shanto,$t0,1
-lw $t0,4($sheam)
-sw $t0,3($sheam)
-beq $t0,$shanto,5
-j 3
+beq $sheam,$shanto,2
+j 10
