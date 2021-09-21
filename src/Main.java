@@ -182,7 +182,7 @@ public class Main {
                         ins = ins.substring(ins.indexOf(' '), ins.length()).trim();
                         try {
                             opcode = op_code.get(opcode);
-                            String target = new NumberConversion().HexaToBinary(ins);
+                            String target = new NumberConversion().DecimalToBinary(Integer.parseInt(ins));
                             JType code = new JType(opcode, target);
                             fwMachineCode.write(code+"\n");
                             fwHexCode.write(code.HexCode()+"\n");
