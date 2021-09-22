@@ -1,10 +1,7 @@
-addi $tanzil,$tanzil,7
-addi $tahsin,$tahsin,3
-addi $sheam,$sheam,0
-sub $tanzil,$tahsin,$tanzil
-addi $inpr,$inpr,0
-beq $inpr,$tanzil,3
-add $sheam,$inpr,$sheam
-addi $inpr,$inpr,1
-j 5
-out $sheam
+add $zero,$zero,$tanzil
+addi $zero,$sheam,5
+beq $sheam,$tanzil,3
+add $shanto,$tanzil,$shanto
+addi $tanzil,$tanzil,1
+j 2
+out $shanto
