@@ -110,7 +110,7 @@ class IType extends Instruction {
             throw new InvalidImmediateException();
         else
             this.immediate = immediate;
-        if(opcode.equals("1010")){
+        if(opcode.equals("1010") || opcode.equals("1100") || opcode.equals("1011") || opcode.equals(" 1010") || opcode.equals(" 1100") || opcode.equals(" 1011")){
             String temp = rt;
             this.rt = this.rs;
             this.rs = temp;
